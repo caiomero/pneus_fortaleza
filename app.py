@@ -4,7 +4,9 @@ import os
 
 app = Flask(__name__)
 
-# Criar banco se não existir
+# =========================
+# CRIAR BANCO
+# =========================
 def init_db():
     conn = sqlite3.connect("clientes.db")
     cursor = conn.cursor()
@@ -22,39 +24,64 @@ def init_db():
 
 init_db()
 
+# =========================
+# DASHBOARD
+# =========================
 @app.route("/")
-def index():
+def dashboard():
+    conn = sqlite3.connect("clientes.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM clientes")
+    total = cursor.fetchone()[0]
+    conn.close()
+    return render_template("dashboard.html", total=total)
+
+# =========================
+# CLIENTES
+# =========================
+@app.route("/clientes")
+def clientes():
     conn = sqlite3.connect("clientes.db")
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM clientes")
-    clientes = cursor.fetchall()
+    dados = cursor.fetchall()
     conn.close()
-    return render_template("clientes.html", clientes=clientes)
+    return render_template("clientes.html", clientes=dados)
 
-@app.route("/add", methods=["POST"])
+# =========================
+# ADICIONAR CLIENTE
+# =========================
+@app.route("/add_cliente", methods=["POST"])
 def add_cliente():
-    nome = request.form["nome"]
-    telefone = request.form["telefone"]
-    veiculo = request.form["veiculo"]
-    placa = request.form["placa"]
-
     conn = sqlite3.connect("clientes.db")
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO clientes (nome, telefone, veiculo, placa) VALUES (?, ?, ?, ?)",
-                   (nome, telefone, veiculo, placa))
+    cursor.execute("""
+        INSERT INTO clientes (nome, telefone, veiculo, placa)
+        VALUES (?, ?, ?, ?)
+    """, (
+        request.form["nome"],
+        request.form["telefone"],
+        request.form["veiculo"],
+        request.form["placa"]
+    ))
     conn.commit()
     conn.close()
+    return redirect("/clientes")
 
-    return redirect("/")
-
+# =========================
+# EXCLUIR CLIENTE
+# =========================
 @app.route("/delete/<int:id>")
-def delete_cliente(id):
+def delete(id):
     conn = sqlite3.connect("clientes.db")
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM clientes WHERE id = ?", (id,))
+    cursor.execute("DELETE FROM clientes WHERE id=?", (id,))
     conn.commit()
     conn.close()
-    return redirect("/")
+    return redirect("/clientes")
 
+# =========================
+# RENDER
+# =========================
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
