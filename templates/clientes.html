@@ -1,47 +1,44 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Borracharia Pro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
 
-{% block content %}
+<h1>Cadastro de Clientes</h1>
 
-<div class="topbar">
-    <h1>Cadastro de Clientes</h1>
-    <button class="btn-vermelho">+ Novo Cliente</button>
-</div>
+<form action="/add" method="POST">
+    <input type="text" name="nome" placeholder="Nome" required>
+    <input type="text" name="telefone" placeholder="Telefone">
+    <input type="text" name="veiculo" placeholder="Veículo">
+    <input type="text" name="placa" placeholder="Placa">
+    <button type="submit">Salvar</button>
+</form>
 
-<div class="card">
-    <h2>Dados do Cliente</h2>
+<h2>Clientes Cadastrados</h2>
 
-    <form>
-        <div class="grid">
-            <div>
-                <label>Nome Completo</label>
-                <input type="text" placeholder="Digite o nome">
-            </div>
+<table>
+    <tr>
+        <th>Nome</th>
+        <th>Telefone</th>
+        <th>Veículo</th>
+        <th>Placa</th>
+        <th>Ação</th>
+    </tr>
 
-            <div>
-                <label>Telefone</label>
-                <input type="text" placeholder="(31) 99999-9999">
-            </div>
+    {% for cliente in clientes %}
+    <tr>
+        <td>{{ cliente[1] }}</td>
+        <td>{{ cliente[2] }}</td>
+        <td>{{ cliente[3] }}</td>
+        <td>{{ cliente[4] }}</td>
+        <td>
+            <a href="/delete/{{ cliente[0] }}">Excluir</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
 
-            <div>
-                <label>CPF/CNPJ</label>
-                <input type="text" placeholder="CPF ou CNPJ">
-            </div>
-
-            <div>
-                <label>Placa do Veículo</label>
-                <input type="text" placeholder="ABC-1234">
-            </div>
-        </div>
-
-        <div class="obs">
-            <label>Observações</label>
-            <textarea placeholder="Informações adicionais..."></textarea>
-        </div>
-
-        <div class="btn-area">
-            <button class="btn-vermelho">Salvar</button>
-        </div>
-    </form>
-</div>
-
-{% endblock %}
+</body>
+</html>
