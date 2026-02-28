@@ -1,44 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Borracharia Pro</title>
+    <title>Pneus Fortaleza</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-<h1>Cadastro de Clientes</h1>
+<div class="sidebar">
+    <h2>PNEUS FORTALEZA</h2>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/clientes">Clientes</a>
+    <a href="/agendamentos">Agendamentos</a>
+    <a href="/financeiro">Financeiro</a>
+</div>
 
-<form action="/add" method="POST">
-    <input type="text" name="nome" placeholder="Nome" required>
-    <input type="text" name="telefone" placeholder="Telefone">
-    <input type="text" name="veiculo" placeholder="Veículo">
-    <input type="text" name="placa" placeholder="Placa">
-    <button type="submit">Salvar</button>
-</form>
+<div class="main">
+    <h1>Cadastro de Clientes</h1>
 
-<h2>Clientes Cadastrados</h2>
+    <div class="card">
+        <form action="/add_cliente" method="POST">
+            <input type="text" name="nome" placeholder="Nome do Cliente" required>
+            <input type="text" name="telefone" placeholder="Telefone">
+            <input type="text" name="veiculo" placeholder="Veículo">
+            <input type="text" name="placa" placeholder="Placa">
+            <button type="submit">Salvar Cliente</button>
+        </form>
+    </div>
 
-<table>
-    <tr>
-        <th>Nome</th>
-        <th>Telefone</th>
-        <th>Veículo</th>
-        <th>Placa</th>
-        <th>Ação</th>
-    </tr>
+    <h2>Clientes Cadastrados</h2>
 
-    {% for cliente in clientes %}
-    <tr>
-        <td>{{ cliente[1] }}</td>
-        <td>{{ cliente[2] }}</td>
-        <td>{{ cliente[3] }}</td>
-        <td>{{ cliente[4] }}</td>
-        <td>
-            <a href="/delete/{{ cliente[0] }}">Excluir</a>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+    <div class="card">
+        <table>
+            <tr>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>Veículo</th>
+                <th>Placa</th>
+                <th>Ação</th>
+            </tr>
+
+            {% for cliente in clientes %}
+            <tr>
+                <td>{{ cliente[1] }}</td>
+                <td>{{ cliente[2] }}</td>
+                <td>{{ cliente[3] }}</td>
+                <td>{{ cliente[4] }}</td>
+                <td>
+                    <a class="delete-btn" href="/delete/{{ cliente[0] }}">Excluir</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+</div>
 
 </body>
 </html>
