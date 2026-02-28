@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Borracharia Pro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+
+    <!-- MENU LATERAL -->
+    <aside class="sidebar">
+        <div class="logo">
+            🛞 BORRACHARIA PRO
+        </div>
+
+        <ul>
+            <li class="active">Dashboard</li>
+            <li>Clientes</li>
+            <li>Serviços</li>
+            <li>Caixa</li>
+            <li>Relatórios</li>
+            <li>Configurações</li>
+        </ul>
+
+        <div class="sair">Sair</div>
+    </aside>
+
+    <!-- CONTEÚDO -->
+    <main class="content">
+        {% block content %}{% endblock %}
+    </main>
+
+</div>
+
+</body>
+</html>
