@@ -5,24 +5,27 @@
     <title>Pneus Fortaleza</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
 
 <div class="layout">
 
-    <!-- MENU LATERAL -->
+    <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="logo">
-            Pneus Fortaleza
+            🛞 <span>PNEUS</span> FORTALEZA
         </div>
 
-        <ul>
-            <li><a href="/clientes">Clientes</a></li>
-        </ul>
+        <nav>
+            <a href="/clientes" class="active">Clientes</a>
+            <a href="#">Serviços</a>
+            <a href="#">Caixa</a>
+            <a href="#">Relatórios</a>
+            <a href="#">Configurações</a>
+        </nav>
     </aside>
 
     <!-- CONTEÚDO -->
-    <main class="main">
+    <main class="content">
         {% block content %}{% endblock %}
     </main>
 
@@ -30,4 +33,3 @@
 
 </body>
 </html>
-
