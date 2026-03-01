@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1 class="page-title">Serviços</h1>
+
+<div class="card">
+    <h2>Novo Serviço</h2>
+
+    <form action="/add_servico" method="POST">
+        <div class="form-grid">
+            <input type="text" name="cliente" placeholder="Nome do Cliente" required>
+            <input type="text" name="descricao" placeholder="Descrição do Serviço" required>
+            <input type="number" step="0.01" name="valor" placeholder="Valor">
+        </div>
+
+        <button type="submit" class="btn-primary">
+            Salvar Serviço
+        </button>
+    </form>
+</div>
+
+{% endblock %}
