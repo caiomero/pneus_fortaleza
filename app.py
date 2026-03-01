@@ -28,14 +28,8 @@ init_db()
 # DASHBOARD
 # =========================
 @app.route("/")
-def dashboard():
-    conn = sqlite3.connect("clientes.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT COUNT(*) FROM clientes")
-    total = cursor.fetchone()[0]
-    conn.close()
-    return render_template("dashboard.html", total=total)
-
+def index():
+    return redirect("/clientes")
 # =========================
 # CLIENTES
 # =========================
@@ -85,3 +79,4 @@ def delete(id):
 # =========================
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
