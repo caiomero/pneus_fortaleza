@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <title>Pneus Fortaleza</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
 <body>
 
-<div class="container">
+<div class="layout">
 
     <!-- MENU LATERAL -->
     <aside class="sidebar">
@@ -15,26 +17,16 @@
         </div>
 
         <ul>
-            <li class="active">Dashboard</li>
-            <li>Clientes</li>
-            <li>Serviços</li>
-            <li>Caixa</li>
-            <li>Relatórios</li>
-            <li>Configurações</li>
+            <li><a href="/clientes">Clientes</a></li>
         </ul>
-
-        <div class="sair">Sair</div>
     </aside>
 
     <!-- CONTEÚDO -->
-    <main class="content">
+    <main class="main">
         {% block content %}{% endblock %}
     </main>
 
 </div>
 
 </body>
-
 </html>
-
-
