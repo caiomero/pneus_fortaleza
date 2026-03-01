@@ -5,25 +5,34 @@ body {
     color: white;
 }
 
+.layout {
+    display: flex;
+}
+
 /* SIDEBAR */
 .sidebar {
     width: 220px;
     height: 100vh;
     background: #1a1a1a;
-    position: fixed;
     padding: 20px;
 }
 
-.sidebar h2 {
+.logo {
     color: #e10600;
+    font-size: 20px;
     margin-bottom: 30px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
 }
 
 .sidebar a {
     display: block;
     color: white;
     text-decoration: none;
-    margin: 15px 0;
+    margin: 10px 0;
     padding: 8px;
     border-radius: 5px;
 }
@@ -34,7 +43,7 @@ body {
 
 /* MAIN */
 .main {
-    margin-left: 240px;
+    flex: 1;
     padding: 30px;
 }
 
@@ -91,13 +100,7 @@ td {
     border-bottom: 1px solid #333;
 }
 
-/* DELETE BUTTON */
-.delete-btn {
+a {
     color: #ff4c4c;
-    text-decoration: none;
     font-weight: bold;
-}
-
-.delete-btn:hover {
-    color: red;
 }
