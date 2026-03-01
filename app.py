@@ -4,9 +4,7 @@ import os
 
 app = Flask(__name__)
 
-# =========================
-# CRIAR BANCO
-# =========================
+# Criar banco se não existir
 def init_db():
     conn = sqlite3.connect("clientes.db")
     cursor = conn.cursor()
@@ -24,15 +22,12 @@ def init_db():
 
 init_db()
 
-# =========================
-# DASHBOARD
-# =========================
+# 🔥 SOLUÇÃO RÁPIDA:
+# Página inicial redireciona para /clientes
 @app.route("/")
 def index():
     return redirect("/clientes")
-# =========================
-# CLIENTES
-# =========================
+
 @app.route("/clientes")
 def clientes():
     conn = sqlite3.connect("clientes.db")
@@ -42,9 +37,6 @@ def clientes():
     conn.close()
     return render_template("clientes.html", clientes=dados)
 
-# =========================
-# ADICIONAR CLIENTE
-# =========================
 @app.route("/add_cliente", methods=["POST"])
 def add_cliente():
     conn = sqlite3.connect("clientes.db")
@@ -53,18 +45,15 @@ def add_cliente():
         INSERT INTO clientes (nome, telefone, veiculo, placa)
         VALUES (?, ?, ?, ?)
     """, (
-        request.form["nome"],
-        request.form["telefone"],
-        request.form["veiculo"],
-        request.form["placa"]
+        request.form.get("nome"),
+        request.form.get("telefone"),
+        request.form.get("veiculo"),
+        request.form.get("placa")
     ))
     conn.commit()
     conn.close()
     return redirect("/clientes")
 
-# =========================
-# EXCLUIR CLIENTE
-# =========================
 @app.route("/delete/<int:id>")
 def delete(id):
     conn = sqlite3.connect("clientes.db")
@@ -74,9 +63,5 @@ def delete(id):
     conn.close()
     return redirect("/clientes")
 
-# =========================
-# RENDER
-# =========================
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-
