@@ -4,22 +4,22 @@ from flask import Flask, render_template, request, redirect
 
 app = Flask(__name__)
 
-# =========================
-# CONEXÃO COM BANCO
-# =========================
-
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 def get_connection():
-    return psycopg2.connect(DATABASE_URL)
-
-# =========================
-# CRIAR TABELAS AUTOMATICAMENTE
-# =========================
+    try:
+        return psycopg2.connect(DATABASE_URL)
+    except Exception as e:
+        print("Erro ao conectar no banco:", e)
+        return None
 
 @app.before_first_request
 def init_db():
     conn = get_connection()
+    if not conn:
+        print("Banco não conectado.")
+        return
+
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -46,100 +46,22 @@ def init_db():
     cursor.close()
     conn.close()
 
-# =========================
-# ROTAS
-# =========================
-
 @app.route("/")
 def home():
     return redirect("/clientes")
 
 @app.route("/clientes")
 def clientes():
-    busca = request.args.get("busca")
-
     conn = get_connection()
+    if not conn:
+        return "Erro ao conectar no banco."
+
     cursor = conn.cursor()
-
-    if busca:
-        cursor.execute(
-            "SELECT * FROM clientes WHERE nome ILIKE %s ORDER BY id DESC",
-            ('%' + busca + '%',)
-        )
-    else:
-        cursor.execute("SELECT * FROM clientes ORDER BY id DESC")
-
+    cursor.execute("SELECT * FROM clientes ORDER BY id DESC")
     dados = cursor.fetchall()
     cursor.close()
     conn.close()
-
     return render_template("clientes.html", clientes=dados)
-
-@app.route("/add_cliente", methods=["POST"])
-def add_cliente():
-    nome = request.form["nome"]
-    telefone = request.form.get("telefone")
-    veiculo = request.form.get("veiculo")
-    placa = request.form.get("placa")
-    descricao = request.form.get("descricao")
-
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        INSERT INTO clientes (nome, telefone, veiculo, placa, descricao)
-        VALUES (%s, %s, %s, %s, %s)
-    """, (nome, telefone, veiculo, placa, descricao))
-
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-    return redirect("/clientes")
-
-@app.route("/delete/<int:id>")
-def delete_cliente(id):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM clientes WHERE id = %s", (id,))
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return redirect("/clientes")
-
-@app.route("/servicos")
-def servicos():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM servicos ORDER BY id DESC")
-    dados = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return render_template("servicos.html", servicos=dados)
-
-@app.route("/add_servico", methods=["POST"])
-def add_servico():
-    cliente = request.form["cliente"]
-    descricao = request.form["descricao"]
-    valor = request.form["valor"]
-
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        INSERT INTO servicos (cliente, descricao, valor)
-        VALUES (%s, %s, %s)
-    """, (cliente, descricao, valor))
-
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-    return redirect("/servicos")
-
-# =========================
-# EXECUÇÃO LOCAL
-# =========================
 
 if __name__ == "__main__":
     app.run(debug=True)
