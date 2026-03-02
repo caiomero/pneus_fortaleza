@@ -5,14 +5,16 @@ from flask import Flask, render_template, request, redirect
 app = Flask(__name__)
 
 # =========================
-# CONEXÃO COM POSTGRESQL
+# CONEXÃO COM BANCO (POSTGRES RENDER)
 # =========================
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
 def get_connection():
-    return psycopg2.connect(os.environ["DATABASE_URL"])
+    return psycopg2.connect(DATABASE_URL)
 
 # =========================
-# CRIAR TABELAS
+# CRIAR TABELAS (SE NÃO EXISTIREM)
 # =========================
 
 def init_db():
@@ -35,13 +37,15 @@ def init_db():
             id SERIAL PRIMARY KEY,
             cliente TEXT,
             descricao TEXT,
-            valor NUMERIC
+            valor REAL
         )
     """)
 
     conn.commit()
+    cursor.close()
     conn.close()
 
+# Chama a função depois de definir ela
 init_db()
 
 # =========================
@@ -52,33 +56,15 @@ init_db()
 def home():
     return redirect("/clientes")
 
-# =========================
-# LISTAR + BUSCAR CLIENTES
-# =========================
-
 @app.route("/clientes")
 def clientes():
-    busca = request.args.get("busca")
-
     conn = get_connection()
     cursor = conn.cursor()
-
-    if busca:
-        cursor.execute(
-            "SELECT * FROM clientes WHERE nome ILIKE %s ORDER BY id DESC",
-            (f"%{busca}%",)
-        )
-    else:
-        cursor.execute("SELECT * FROM clientes ORDER BY id DESC")
-
+    cursor.execute("SELECT * FROM clientes ORDER BY id DESC")
     dados = cursor.fetchall()
+    cursor.close()
     conn.close()
-
     return render_template("clientes.html", clientes=dados)
-
-# =========================
-# ADICIONAR CLIENTE
-# =========================
 
 @app.route("/add_cliente", methods=["POST"])
 def add_cliente():
@@ -97,70 +83,28 @@ def add_cliente():
     """, (nome, telefone, veiculo, placa, descricao))
 
     conn.commit()
+    cursor.close()
     conn.close()
 
     return redirect("/clientes")
-
-# =========================
-# DELETAR CLIENTE
-# =========================
 
 @app.route("/delete/<int:id>")
 def delete_cliente(id):
     conn = get_connection()
     cursor = conn.cursor()
-
     cursor.execute("DELETE FROM clientes WHERE id = %s", (id,))
-
     conn.commit()
+    cursor.close()
     conn.close()
-
     return redirect("/clientes")
-
-# =========================
-# EDITAR CLIENTE
-# =========================
-
-@app.route("/editar/<int:id>", methods=["GET", "POST"])
-def editar_cliente(id):
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    if request.method == "POST":
-        nome = request.form["nome"]
-        telefone = request.form["telefone"]
-        veiculo = request.form["veiculo"]
-        placa = request.form["placa"]
-        descricao = request.form["descricao"]
-
-        cursor.execute("""
-            UPDATE clientes
-            SET nome=%s, telefone=%s, veiculo=%s, placa=%s, descricao=%s
-            WHERE id=%s
-        """, (nome, telefone, veiculo, placa, descricao, id))
-
-        conn.commit()
-        conn.close()
-        return redirect("/clientes")
-
-    cursor.execute("SELECT * FROM clientes WHERE id=%s", (id,))
-    cliente = cursor.fetchone()
-    conn.close()
-
-    return render_template("editar.html", cliente=cliente)
-
-# =========================
-# SERVIÇOS
-# =========================
 
 @app.route("/servicos")
 def servicos():
     conn = get_connection()
     cursor = conn.cursor()
-
     cursor.execute("SELECT * FROM servicos ORDER BY id DESC")
     dados = cursor.fetchall()
-
+    cursor.close()
     conn.close()
     return render_template("servicos.html", servicos=dados)
 
@@ -179,12 +123,13 @@ def add_servico():
     """, (cliente, descricao, valor))
 
     conn.commit()
+    cursor.close()
     conn.close()
 
     return redirect("/servicos")
 
 # =========================
-# EXECUÇÃO
+# EXECUÇÃO LOCAL
 # =========================
 
 if __name__ == "__main__":
