@@ -4,15 +4,20 @@ from flask import Flask, render_template, request, redirect
 
 app = Flask(__name__)
 
+# =========================
+# CONEXÃO COM BANCO
+# =========================
+
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 def get_connection():
     return psycopg2.connect(DATABASE_URL)
 
 # =========================
-# CRIAR TABELAS
+# CRIAR TABELAS AUTOMATICAMENTE
 # =========================
 
+@app.before_first_request
 def init_db():
     conn = get_connection()
     cursor = conn.cursor()
@@ -40,8 +45,6 @@ def init_db():
     conn.commit()
     cursor.close()
     conn.close()
-
-init_db()
 
 # =========================
 # ROTAS
@@ -133,6 +136,10 @@ def add_servico():
     conn.close()
 
     return redirect("/servicos")
+
+# =========================
+# EXECUÇÃO LOCAL
+# =========================
 
 if __name__ == "__main__":
     app.run(debug=True)
