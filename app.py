@@ -1,5 +1,5 @@
 import os
-import sqlite3
+import psycopg2
 from flask import Flask, render_template, request, redirect
 
 app = Flask(__name__)
@@ -8,9 +8,9 @@ app = Flask(__name__)
 # BANCO DE DADOS
 # =========================
 
-def init_db():
-    conn = sqlite3.connect("database.db")
-    cursor = conn.cursor()
+def get_connection():
+    return psycopg2.connect(os.environ["DATABASE_URL"])
+
 
     # Tabela clientes
     cursor.execute("""
@@ -116,3 +116,4 @@ def add_servico():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
