@@ -4,17 +4,13 @@ from flask import Flask, render_template, request, redirect
 
 app = Flask(__name__)
 
-# =========================
-# CONEXÃO COM BANCO (POSTGRES RENDER)
-# =========================
-
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 def get_connection():
     return psycopg2.connect(DATABASE_URL)
 
 # =========================
-# CRIAR TABELAS (SE NÃO EXISTIREM)
+# CRIAR TABELAS
 # =========================
 
 def init_db():
@@ -45,7 +41,6 @@ def init_db():
     cursor.close()
     conn.close()
 
-# Chama a função depois de definir ela
 init_db()
 
 # =========================
@@ -58,12 +53,23 @@ def home():
 
 @app.route("/clientes")
 def clientes():
+    busca = request.args.get("busca")
+
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM clientes ORDER BY id DESC")
+
+    if busca:
+        cursor.execute(
+            "SELECT * FROM clientes WHERE nome ILIKE %s ORDER BY id DESC",
+            ('%' + busca + '%',)
+        )
+    else:
+        cursor.execute("SELECT * FROM clientes ORDER BY id DESC")
+
     dados = cursor.fetchall()
     cursor.close()
     conn.close()
+
     return render_template("clientes.html", clientes=dados)
 
 @app.route("/add_cliente", methods=["POST"])
@@ -127,10 +133,6 @@ def add_servico():
     conn.close()
 
     return redirect("/servicos")
-
-# =========================
-# EXECUÇÃO LOCAL
-# =========================
 
 if __name__ == "__main__":
     app.run(debug=True)
